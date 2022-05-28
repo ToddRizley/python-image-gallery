@@ -1,29 +1,35 @@
 import psycopg2
-
+import json
+from secrets import get_secret_image_gallery
 
 class DBConnector:
-
+    
     def __init__(self):
         self.connection = None
-        self.db_host = None
-        self.db_name = None
-        self.db_user = None
-        self.password_file = None
+        secret = self.get_secret()
+        self.db_host = secret['host']
+        self.db_name = secret['db_name']
+        self.db_user = secret['username']
+        self.password = secret['password']
     
-    def set_db_vars(self, host_in, name_in, user_in, password_file_in):
-        self.db_host = host_in
-        self.db_name = name_in
-        self.db_user = user_in
-        self.password_file = password_file_in
+    def get_secret(self):
+        jsonString = get_secret_image_gallery()
+        return json.loads(jsonString)
+
+#    def set_db_vars(self, host_in, name_in, user_in, password_file_in):
+#        self.db_host = host_in
+#        self.db_name = name_in
+#        self.db_user = user_in
+#        self.password_file = password_file_in
         
-    def get_password(self):
-        f = open(self.password_file, "r")
-        result = f.readline()
-        f.close
-        return result[:-1]
+  #  def get_password(self):
+  #      f = open(self.password_file, "r")
+  #      result = f.readline()
+  #      f.close
+  #      return result[:-1]
 
     def connect(self):
-        self.connection = psycopg2.connect(host=self.db_host, dbname=self.db_name, user= self.db_user, password= self.get_password())
+        self.connection = psycopg2.connect(host=self.db_host, dbname=self.db_name, user= self.db_user, password= self.password)
 
     def execute(self, query, args=None):
         cursor = self.connection.cursor()

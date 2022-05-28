@@ -4,10 +4,10 @@ db_instance = None
 def main():
     global db_instance 
     db_instance = db.DBConnector()
-    db_instance.set_db_vars(host_in = "demo-db-1.c0dnixzhpyd9.us-east-1.rds.amazonaws.com",
-     name_in= "image_gallery", 
-     user_in= "image_gallery", 
-     password_file_in= "/home/ec2-user/.image_gallery_config")
+#    db_instance.set_db_vars(host_in = "image-gallery.c0dnixzhpyd9.us-east-1.rds.amazonaws.com",
+#     name_in= "image_gallery", 
+#     user_in= "image_gallery", 
+#     password_file_in= "/home/ec2-user/.image_gallery_config")
     db_instance.connect()
 
     do_continue = True
