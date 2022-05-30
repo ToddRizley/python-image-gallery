@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block body %}
+<br/>
+<br/>
+<br/>
+<h1>USER LIST</h1>
+<table>
+  <tr>
+    <th>Username</th>
+    <th>Full Name</th>
+  </tr>
+        {% for user in users %}
+            <tr>
+		<td><a href="/admin/edit_user/{{user.username}}">{{user.username}}</a></td>
+                <td>{{user.full_name}}</td>
+		<td>
+			<form action="/admin//deletion_confirmation/{{user.username}}" method="POST">
+      			 	<input type="submit" value="Delete User" />
+		   	</form>
+            	</td>
+	    </tr>
+        {% endfor %}
+</table>
+{% endblock body %}

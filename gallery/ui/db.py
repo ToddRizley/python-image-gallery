@@ -1,7 +1,7 @@
 import psycopg2
 import json
-from gallery.tools.secrets import get_secret_image_gallery
-#from secrets import get_secret_image_gallery
+from secrets import get_secret_image_gallery
+
 class DBConnector:
     
     def __init__(self):

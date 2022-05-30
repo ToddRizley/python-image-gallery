@@ -1,0 +1,11 @@
+<!doctype html>
+<title>User Management System</title>
+<nav>
+    <h1>User Management System</h1>
+  <ul>
+      <li><a href="{{ url_for('add_user') }}">Add User</a>
+      <li><a href="{{ url_for('list_users') }}">List Users </a>
+  </ul>
+</nav>
+{% block body %}
+{% endblock body %}

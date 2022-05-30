@@ -1,5 +1,5 @@
 import db
-
+#from db import * 
 db_instance = None
 def main():
     global db_instance 
