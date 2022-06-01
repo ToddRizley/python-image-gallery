@@ -30,6 +30,7 @@ class DBConnector:
 
     def connect(self):
         self.connection = psycopg2.connect(host=self.db_host, dbname=self.db_name, user= self.db_user, password= self.password)
+        self.connection.set_session(autocommit=True)
 
     def execute(self, query, args=None):
         cursor = self.connection.cursor()
@@ -45,6 +46,10 @@ class DBConnector:
 
     def add_user(self, username, password, full_name):
         res = self.execute("INSERT INTO users (username, password, full_name) VALUES (%s, %s, %s)", (username, password, full_name) )
+        return res
+    
+    def get_user(self, username):
+        res = self.execute("SELECT * FROM users WHERE username=%s", (username,))
         return res
 
     def get_users(self):

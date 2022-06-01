@@ -1,51 +1,76 @@
-from flask import Flask
-from flask import request
-from flask import render_template
-from flask import redirect, url_for
-#from python-image-gallery.gallery.tools import db
+from flask import Flask, request, render_template, url_for, redirect
 from gallery.tools.db import *
+
 app = Flask(__name__)
-#global db_instance 
-#db_instance = DBConnector()
-#db_instance.connect()
 
+@app.route('/admin')
+def admin():
+    db_instance = DBConnector()
+    db_instance.connect()
+    res  = db_instance.get_users()
+    return render_template('admin.html', users=prepare_user_list(res))
 
-@app.route("/admin/deletion_confirmation/<username>", methods=["POST"])
+@app.route('/admin/add_user')
+def add_user():
+    return render_template("add_user.html")
+
+@app.route('/create_user', methods=['POST'])
+def create_user():
+    db_instance = DBConnector()
+    db_instance.connect()
+
+    username = request.form['username']
+    full_name = request.form['full_name']
+    password = request.form['password']
+    db_instance.add_user(username, password, full_name)
+
+    res  = db_instance.get_users()
+    return render_template('admin.html', users=prepare_user_list(res))
+
+@app.route('/admin/deletion_confirmation/<username>', methods=['GET'])
 def deletion_confirmation(username):
     return render_template("deletion_confirmation.html", username=username)
 
-@app.route('/admin/add_user', methods=['POST', 'GET'])
-def add_user():
-    if request.method == 'GET':
-        return render_template("add_user.html")
-    elif request.method == 'POST':
-        username = request.form['username']
-        full_name = request.form['full_name']
-        password = request.form['password']
-        ##add db
-        return redirect('/admin/list_users')
-
-@app.route('/admin/edit_user/<username>', methods=['GET', 'POST'])
-def edit_user(username):
-
-    if request.method == 'GET':
-        user = {'username':'barney', 'password':'buzz', 'full_name':'Barney Rubble'}
-        return render_template("edit_user.html", user=user)
-    elif request.method == 'POST':
-        username = request.form['username']
-        full_name = request.form['full_name']
-        password = request.form['password']
-        return redirect('/admin/list_users')
-
-@app.route('/admin/delete_user/<username>', methods=['POST'])
+@app.route('/delete_user/<username>', methods=['POST'])
 def delete_user(username):
-    return redirect("/admin/list_users")
+    db_instance = DBConnector()
+    db_instance.connect()
+    db_instance.delete_user(username)
 
-@app.route("/admin/list_users", methods=['GET'])
-def list_users():
-#    db_instance = DBConnector()
-#    db_instance.connect()
-#    users = db_instance.get_users()
-    users = [{'username':'barney', 'password':'buzz', 'full_name':'Barney Rubble'}, {'username':'betty', 'password':'fizz', 'full_name':'Betty Rubble'}]
-            
-    return render_template("index.html", users=users)
+    res  = db_instance.get_users()
+    return render_template('admin.html', users=prepare_user_list(res))
+
+@app.route('/admin/edit_user/<username>', methods=['GET'])
+def edit_user(username):
+    db_instance = DBConnector()
+    db_instance.connect()
+    
+    row = db_instance.get_user(username).fetchone()
+    user = {'username': row[0], 'password': row[1], 'full_name': row[2]}
+    return render_template("edit_user.html", user=user)
+
+@app.route('/update_user/<username>', methods=['POST'])
+def update_user(username):
+    full_name = request.form['full_name']
+    password = request.form['password']
+    
+    db_instance = DBConnector()
+    db_instance.connect()
+
+    row = db_instance.get_user(username).fetchone()
+    user = {'username': row[0], 'password': row[1], 'full_name': row[2]}
+
+    if user['password'] != password:
+        db_instance.edit_password(username, password)
+    if user['full_name'] != full_name:
+        db_instance.edit_full_name(username, full_name)
+
+    res  = db_instance.get_users()
+    return render_template('admin.html', users=prepare_user_list(res))
+
+#Helper methods
+def prepare_user_list(users_object):
+    result = []
+    for row in users_object:
+        result.append({'username': row[0], 'full_name':row[1]})
+    return result

@@ -6,8 +6,8 @@
 <h1>Edit User: {{user.username}}</h1>
 <br/>
 
-<form action="/admin/edit_user/{{user.username}}" method="POST">
-	<span>Username: </span><input type="text" name="username" value="{{user.username}}"/>
+<form action="/update_user/{{user.username}}" method="POST">
+	<span>Username: {{user.username}} <span/>
 	<span>Password: </span><input type="text" name="password" value="{{user.password}}"/>
 	<span>Full Name: </span><input type="text" name="full_name" value="{{user.full_name}}"/>
         <input type="submit" value="Update User" />

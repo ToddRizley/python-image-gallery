@@ -1,12 +1,9 @@
 {% extends 'base.html' %}
 {% block body %}
 <br/>
-<br/>
-<br/>
 <h1>Add User</h1>
-<br/>
 
-<form action="/admin/add_user" method="POST">
+<form action="/create_user" method="POST">
         <span>Username: </span><input type="text" name="username"/>
         <span>Password: </span><input type="text" name="password"/>
         <span>Full Name: </span><input type="text" name="full_name"/>
