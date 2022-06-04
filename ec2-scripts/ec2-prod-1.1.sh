@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 export IMAGE_GALLERY_SCRIPT_VERSION="1.1"
-CONFIG_BUCKET="edu.au.cc.image-gallery-config"
+CONFIG_BUCKET="edu.au.cc.image-gallery-config.tzr"
 
 # Install packages
 yum -y update
@@ -10,7 +10,7 @@ amazon-linux-extras install -y nginx1
 
 # Configure/install custom software
 cd /home/ec2-user
-git clone https://github.com/cdavidshaffer/python-image-gallery.git
+git clone https://github.com/ToddRizley/python-image-gallery.git
 chown -R ec2-user:ec2-user python-image-gallery
 su ec2-user -l -c "cd ~/python-image-gallery && pip3 install -r requirements.txt --user"
 
