@@ -5,7 +5,8 @@ CONFIG_BUCKET="edu.au.cc.image-gallery-config.tzr"
 
 # Install packages
 yum -y update
-yum install -y python3 git postgresql postgresql-devel gcc python3-devel
+amazon-linux-extras install postgresql13
+yum install -y python3 git postgresql-devel gcc python3-devel
 amazon-linux-extras install -y nginx1
 
 # Configure/install custom software
