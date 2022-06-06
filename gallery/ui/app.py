@@ -1,10 +1,31 @@
-from flask import Flask, request, render_template, url_for, redirect
+from flask import Flask, request, render_template, url_for, redirect, session
 from gallery.tools.db import connect, get_users, get_user, add_user, edit_full_name, edit_password, delete_user
 #from gallery.tools.user import User
 #from gallery.tools.postgres_user_dao import PostgresUserDAO
-
+from gallery.tools.secrets import get_secret_flask_session
 app = Flask(__name__)
+app.secret_key = get_secret_flask_session()
+
 connect()
+
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
+@app.route('/login_exec', methods=['POST'])
+def login_exec():
+    user = get_user(request.form['username']).fetchone()
+    ## Update method to use DAO/user class
+    if user is None or user[1] != request.form['password']:
+        return redirect('/invalid_login')
+    else:
+        session["username"] = user[0]
+        return redirect("/admin")
+    
+@app.route('/invalid_login')
+def invalid_login():
+    ##message flash redirect to /login
+    return render_template('invalid_login.html')
 
 @app.route('/admin')
 def admin():
