@@ -15,7 +15,7 @@ def admin():
 def add_new_user():
     return render_template("add_new_user.html")
 
-@app.route('/create_user', methods=['POST'])
+@app.route('/admin/create_user', methods=['POST'])
 def create_user():
 
     username = request.form['username']
@@ -29,7 +29,7 @@ def create_user():
 def deletion_confirmation(username):
     return render_template("deletion_confirmation.html", username=username)
 
-@app.route('/delete_user/<username>', methods=['POST'])
+@app.route('/admin/delete_user/<username>', methods=['POST'])
 def delete_user_route(username):
     delete_user(username)
 
@@ -42,7 +42,7 @@ def edit_user(username):
     user = {'username': row[0], 'password': row[1], 'full_name': row[2]}
     return render_template("edit_user.html", user=user)
 
-@app.route('/update_user/<username>', methods=['POST'])
+@app.route('/admin/update_user/<username>', methods=['POST'])
 def update_user(username):
     full_name = request.form['full_name']
     password = request.form['password']
@@ -57,9 +57,9 @@ def update_user(username):
 
     return  redirect('/admin')
 
-@app.route('/hello')
-def hello():
-    return '<p>hello world!</p>'
+# @app.route('/hello')
+# def hello():
+#    return '<p>hello world!</p>'
 
 #@app.route('/users')
 #def users():
