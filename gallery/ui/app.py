@@ -1,8 +1,10 @@
-from flask import Flask, request, render_template, url_for, redirect, session
-from gallery.tools.db import connect, get_users, get_user, add_user, edit_full_name, edit_password, delete_user
-#from gallery.tools.user import User
-#from gallery.tools.postgres_user_dao import PostgresUserDAO
+from flask import Flask, request, render_template, redirect, session
+from gallery.tools.db import connect
+from gallery.tools.user import User
+from gallery.tools.postgres_user_dao import PostgresUserDAO
 from gallery.tools.secrets import get_secret_flask_session
+from functools import wraps
+
 app = Flask(__name__)
 app.secret_key = get_secret_flask_session()
 
@@ -14,12 +16,11 @@ def login():
 
 @app.route('/login_exec', methods=['POST'])
 def login_exec():
-    user = get_user(request.form['username']).fetchone()
-    ## Update method to use DAO/user class
-    if user is None or user[1] != request.form['password']:
+    user = get_user_dao().get_user(request.form['username'])
+    if user is None or user.password != request.form['password']:
         return redirect('/invalid_login')
     else:
-        session["username"] = user[0]
+        session["username"] = user.username
         return redirect("/admin")
     
 @app.route('/invalid_login')
@@ -29,8 +30,7 @@ def invalid_login():
 
 @app.route('/admin')
 def admin():
-    users = get_users()
-    return render_template('admin.html', users=prepare_user_list(users))
+    return render_template('admin.html', users= get_user_dao().get_users())
 
 @app.route('/admin/add_new_user')
 def add_new_user():
@@ -38,12 +38,7 @@ def add_new_user():
 
 @app.route('/admin/create_user', methods=['POST'])
 def create_user():
-
-    username = request.form['username']
-    full_name = request.form['full_name']
-    password = request.form['password']
-    add_user(username, password, full_name)
-
+    get_user_dao().add_user(request.form['username'], request.form['full_name'], request.form['password'])
     return  redirect('/admin')
 
 @app.route('/admin/deletion_confirmation/<username>', methods=['GET'])
@@ -52,50 +47,29 @@ def deletion_confirmation(username):
 
 @app.route('/admin/delete_user/<username>', methods=['POST'])
 def delete_user_route(username):
-    delete_user(username)
-
+    get_user_dao().delete_user(username)
     return  redirect('/admin')
 
 @app.route('/admin/edit_user/<username>', methods=['GET'])
 def edit_user(username):
-    
-    row = get_user(username).fetchone()
-    user = {'username': row[0], 'password': row[1], 'full_name': row[2]}
-    return render_template("edit_user.html", user=user)
+    return render_template("edit_user.html", user= get_user_dao().get_user(username))
 
 @app.route('/admin/update_user/<username>', methods=['POST'])
 def update_user(username):
-    full_name = request.form['full_name']
-    password = request.form['password']
-    
-    row = get_user(username).fetchone()
-    user = {'username': row[0], 'password': row[1], 'full_name': row[2]}
-
-    if user['password'] != password:
-        edit_password(username, password)
-    if user['full_name'] != full_name:
-        edit_full_name(username, full_name)
-
+    user = get_user_dao().get_user(username)
+    if user.password != request.form['password']:
+        get_user_dao().edit_password(username, request.form['password'])
+    if user.full_name != request.form['full_name']:
+        get_user_dao().edit_full_name(username, request.form['full_name'])
     return  redirect('/admin')
 
-# @app.route('/hello')
-# def hello():
-#    return '<p>hello world!</p>'
-
-#@app.route('/users')
-#def users():
-#    result = ""
-#    for user in get_user_DAO().get_users():
-#        result+= str(user.username)
-#    return result
-    
-
-#Helper methods
-#def get_user_DAO():
-#    return PostgresUserDAO()
-
-def prepare_user_list(users_object):
-    result = []
-    for row in users_object:
-        result.append({'username': row[0], 'full_name':row[2]})
+@app.route('/admin/users')
+def users():
+    result = ""
+    for user in get_user_DAO().get_users():
+        result+= str(user)
     return result
+    
+#Helper methods
+def get_user_dao():
+    return PostgresUserDAO()
