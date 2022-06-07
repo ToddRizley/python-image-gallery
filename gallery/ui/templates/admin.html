@@ -2,11 +2,15 @@
 {% block body %}
 <br/>
 <h2>USER LIST</h2>
-<table>
-  <tr>
-    <th>Username</th>
-    <th>Full Name</th>
-  </tr>
+  {% if users|length == 0 %}
+  	<br/>
+  	<p><i>No users in the database</i></p>
+  {% else %}
+  <table>
+  	<tr>
+   		<th>Username</th>
+   	 	<th>Full Name</th>
+ 	</tr>
         {% for user in users %}
             <tr>
 		<td><a href="/admin/edit_user/{{user.username}}">{{user.username}}</a></td>
@@ -14,5 +18,6 @@
 		<td><a href="/admin/deletion_confirmation/{{user.username}}">Delete User</td>
 	    </tr>
         {% endfor %}
+  {% endif %}
 </table>
 {% endblock body %}

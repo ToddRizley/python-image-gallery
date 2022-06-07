@@ -1,8 +1,8 @@
 from flask import Flask, request, render_template, redirect, session
-from gallery.tools.db import connect
-from gallery.tools.user import User
-from gallery.tools.postgres_user_dao import PostgresUserDAO
-from gallery.tools.secrets import get_secret_flask_session
+from gallery.data.db import connect
+from gallery.data.user import User
+from gallery.data.postgres_user_dao import PostgresUserDAO
+from gallery.aws.secrets import get_secret_flask_session
 from functools import wraps
 
 app = Flask(__name__)
@@ -38,7 +38,7 @@ def add_new_user():
 
 @app.route('/admin/create_user', methods=['POST'])
 def create_user():
-    get_user_dao().add_user(request.form['username'], request.form['full_name'], request.form['password'])
+    get_user_dao().add_user(request.form['username'], request.form['password'], request.form['full_name'])
     return  redirect('/admin')
 
 @app.route('/admin/deletion_confirmation/<username>', methods=['GET'])
