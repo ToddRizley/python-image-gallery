@@ -10,6 +10,28 @@ app.secret_key = get_secret_flask_session()
 
 connect()
 
+def check_admin():
+    return 'username' in session and session['username'] == 'fred'
+
+def check_auth():
+    return 'username' in session
+
+def requires_admin(view):
+    @wraps(view)
+    def decorated(**kwargs):
+        if not check_admin():
+            return redirect('/login')
+        return view(**kwargs)
+    return decorated
+
+def requires_authentication(view):
+    @wraps(view)
+    def decorated(**kwargs):
+        if not check_auth():
+            return redirect('/login')
+        return view(**kwargs)
+    return decorated
+
 @app.route('/login')
 def login():
     return render_template('login.html')
@@ -29,32 +51,46 @@ def invalid_login():
     return render_template('invalid_login.html')
 
 @app.route('/admin')
+# @requires_admin
+# @requires_authentication
 def admin():
     return render_template('admin.html', users= get_user_dao().get_users())
 
 @app.route('/admin/add_new_user')
+# @requires_admin
+# @requires_authentication
 def add_new_user():
     return render_template("add_new_user.html")
 
 @app.route('/admin/create_user', methods=['POST'])
+# @requires_admin
+# @requires_authentication
 def create_user():
     get_user_dao().add_user(request.form['username'], request.form['password'], request.form['full_name'])
     return  redirect('/admin')
 
 @app.route('/admin/deletion_confirmation/<username>', methods=['GET'])
+# @requires_admin
+# @requires_authentication
 def deletion_confirmation(username):
     return render_template("deletion_confirmation.html", username=username)
 
 @app.route('/admin/delete_user/<username>', methods=['POST'])
+# @requires_admin
+# @requires_authentication
 def delete_user_route(username):
     get_user_dao().delete_user(username)
     return  redirect('/admin')
 
 @app.route('/admin/edit_user/<username>', methods=['GET'])
+# @requires_admin
+# @requires_authentication
 def edit_user(username):
     return render_template("edit_user.html", user= get_user_dao().get_user(username))
 
 @app.route('/admin/update_user/<username>', methods=['POST'])
+# @requires_admin
+# @requires_authentication
 def update_user(username):
     user = get_user_dao().get_user(username)
     if user.password != request.form['password']:
@@ -64,6 +100,8 @@ def update_user(username):
     return  redirect('/admin')
 
 @app.route('/admin/users')
+# @requires_admin
+# @requires_authentication
 def users():
     result = ""
     for user in get_user_DAO().get_users():
@@ -71,5 +109,6 @@ def users():
     return result
     
 #Helper methods
+
 def get_user_dao():
     return PostgresUserDAO()
