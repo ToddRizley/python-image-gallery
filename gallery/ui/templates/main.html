@@ -1,0 +1,10 @@
+{% block body %}
+<h2>MAIN MENU</h2>
+<ul>
+	<li><a href="/upload_image">Upload Image</a></li>
+	<li><a href="/images/{{username}}">View Images</a></li>
+	{% if is_admin %}
+		<li><a href="/admin/users">User Administration</a></li>
+	{% endif %}
+</ul>
+{% endblock body %}
