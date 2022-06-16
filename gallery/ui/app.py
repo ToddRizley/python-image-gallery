@@ -1,17 +1,22 @@
-from flask import Flask, request, render_template, redirect, session
+from flask import Flask, flash, request, render_template, redirect, session
 from gallery.data.db import connect
 from gallery.data.user import User
+from gallery.data.image import Image
+from gallery.data.postgres_image_dao import PostgresImageDAO
 from gallery.data.postgres_user_dao import PostgresUserDAO
 from gallery.aws.secrets import get_secret_flask_session
 from functools import wraps
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = get_secret_flask_session()
+S3_BUCKET = 'edu.au.cc.image-gallery.tzr'
 
 connect()
 
 def check_admin():
     return session["is_admin"]
+
 def check_auth():
     return 'username' in session
 
@@ -55,6 +60,25 @@ def invalid_login():
 @requires_authentication
 def main_menu():
     return render_template('main.html', username=session["username"], is_admin=session["is_admin"])
+
+@app.route('/upload_image')
+@requires_authentication
+def upload_image():
+    ## get user images
+    ## render user images in template
+    return render_template('upload_image.html')
+
+@app.route('/upload_image_exec', methods=['POST'])
+@requires_authentication
+def upload_exec():
+    uploaded_file = request.files['upload_image']
+    if uploaded_file.filename != '':
+        file_path = session['username'] + "/" + secure_filename(uploaded_file.filename)
+        print(file_path)
+        get_image_dao().add_image(S3_BUCKET,file_path, session['username'], uploaded_file)
+        flash('Photo selected and uploaded')
+    return redirect('/')
+
 
 @app.route('/images/<username>')
 @requires_authentication
@@ -117,8 +141,12 @@ def update_user(username):
 @requires_admin
 @requires_authentication
 def users():
-    return redirect('/admin')    
+    return redirect('/admin')
+
 #Helper methods
+
+def get_image_dao():
+    return PostgresImageDAO()
 
 def get_user_dao():
     return PostgresUserDAO()
