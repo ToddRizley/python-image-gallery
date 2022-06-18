@@ -36,3 +36,10 @@ class PostgresUserDAO(UserDAO):
     def delete_user(self, username):
         res = execute("DELETE FROM users WHERE username=%s", (username,))
         return res
+
+#    def get_images_for_username(self, username):
+#        result = []
+#        cursor = execute("SELECT id, file, owner FROM images WHERE owner=%s", (username,))
+#        for t in cursor.fetchall():
+#            result.append(Image(t[0], t[1], t[2]))
+#        return result

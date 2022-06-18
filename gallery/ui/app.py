@@ -49,7 +49,7 @@ def login_exec():
         session["username"] = user.username
         session["is_admin"] = user.is_admin
         
-        return redirect("/main_menu")
+        return redirect("/")
     
 @app.route('/invalid_login')
 def invalid_login():
@@ -64,8 +64,6 @@ def main_menu():
 @app.route('/upload_image')
 @requires_authentication
 def upload_image():
-    ## get user images
-    ## render user images in template
     return render_template('upload_image.html')
 
 @app.route('/upload_image_exec', methods=['POST'])
@@ -74,7 +72,6 @@ def upload_exec():
     uploaded_file = request.files['upload_image']
     if uploaded_file.filename != '':
         file_path = session['username'] + "/" + secure_filename(uploaded_file.filename)
-        print(file_path)
         get_image_dao().add_image(S3_BUCKET,file_path, session['username'], uploaded_file)
         flash('Photo selected and uploaded')
     return redirect('/')
@@ -84,9 +81,17 @@ def upload_exec():
 @requires_authentication
 def view_images(username):
     ## get user images
+    images = get_image_dao().get_images_for_username(S3_BUCKET, username) 
     ## render user images in template
-    return "<p> Hello world!</p>"
+    return render_template('view_images.html', images=images, username=username)
 
+@app.route('/delete_image/<username>/<image_id>')
+@requires_authentication
+def delete_image(username, image_id):
+    image = get_image_dao().get_image_by_id_and_username(image_id, username)
+    get_image_dao().delete_user_image(S3_BUCKET, image)
+    flash('Image Deleted!')
+    return redirect('/images/'+ username)
 
 @app.route('/admin')
 @requires_admin

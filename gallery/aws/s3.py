@@ -38,6 +38,17 @@ def put_object(bucket_name, key, value):
         return False
     return True
 
+def download_object(bucket, filepath, download_to):
+    print("THIS IS FILE PATH: " +filepath)
+    print("THIS IS DOWNLOAD PATH: " + download_to)
+    try:
+        s3 = boto3.resource('s3')
+        response = s3.meta.client.download_file(bucket, filepath, download_to)
+    except ClientError as e:
+        logging.error(e)
+        return None
+    return response
+
 def get_object(bucket_name, key):
     try:
         s3_client = boto3.client('s3')
@@ -46,7 +57,15 @@ def get_object(bucket_name, key):
         logging.error(e)
         return None
     return result
-    
+
+def delete_object(bucket_name, key):
+    try:
+        s3_client = boto3.client('s3')
+        response = s3_client.delete_object(Bucket=bucket_name, Key=key)
+    except ClientError as e:
+        logging.error(e)
+        return None
+    return response
 
 def main():
     #create_bucket('edu.au.cc.image-gallery','us-east-2')

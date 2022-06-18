@@ -1,0 +1,24 @@
+{% block body %}
+<h2>{{username}}'S IMAGE GALLERY</h2>
+  {% if images|length == 0 %}
+  	<br/>
+	<p><i>No images for {{username}}</i></p>
+  {% else %}
+  <table>
+        {% for item in images %}
+            <tr>
+		    <td>
+			    <a href={{ item.file }}>
+				    <img src={{ item.file }} width="500"/>
+		            </a>
+	            </td>
+		    <a href="/delete_image/{{username}}/{{item.id}}">Delete Image</a>
+		    </td>
+	    </tr>
+        {% endfor %}
+  {% endif %}
+</table>
+</br>
+<p><a href="/">Return to Main Menu</a></p>
+{% endblock body %}
+
