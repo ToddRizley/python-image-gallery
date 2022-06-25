@@ -9,7 +9,7 @@ class UserDAO:
     def get_user(self):
         raise Exception("Must be implemented")
 
-    def edit_passowrd(self):
+    def edit_password(self):
         raise Exception("Must be implemented")
     
     def edit_full_name(self):

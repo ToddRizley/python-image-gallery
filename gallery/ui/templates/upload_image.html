@@ -1,0 +1,12 @@
+{% block body %}
+<h2>Upload Image</h2>
+<section>
+	<form action="/upload_image_exec" enctype="multipart/form-data" method="POST" >
+		<input type="file" name="upload_image" accept="image/*">
+		<input type="submit" value="Submit">
+
+	</form>
+</section>
+</br>
+<p><a href="/">Return to Main Menu</a></p>
+{% endblock body %}

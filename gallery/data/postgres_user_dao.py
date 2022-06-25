@@ -9,13 +9,13 @@ class PostgresUserDAO(UserDAO):
 
     def get_users(self):
         result = []
-        cursor = execute("SELECT username, password, full_name FROM users")
+        cursor = execute("SELECT username, password, full_name, is_admin FROM users")
         for t in cursor.fetchall():
-            result.append(User(t[0], t[1], t[2]))
+            result.append(User(t[0], t[1], t[2], t[3]))
         return result
 
-    def add_user(self, username, password, full_name):
-        res = execute("INSERT INTO users (username, password, full_name) VALUES (%s, %s, %s)", (username, password, full_name) )
+    def add_user(self, username, password, full_name, is_admin):
+        res = execute("INSERT INTO users (username, password, full_name, is_admin) VALUES (%s, %s, %s, %s)", (username, password, full_name, is_admin))
         return res    
     
     def get_user(self, username):
@@ -23,7 +23,7 @@ class PostgresUserDAO(UserDAO):
         if row is None:
             return None
         else:
-            return User(row[0], row[1], row[2])
+            return User(row[0], row[1], row[2], row[3])
 
     def edit_full_name(self, username, new_full_name):
         res = execute("UPDATE users SET full_name=%s where username=%s", (new_full_name, username))
@@ -36,3 +36,10 @@ class PostgresUserDAO(UserDAO):
     def delete_user(self, username):
         res = execute("DELETE FROM users WHERE username=%s", (username,))
         return res
+
+#    def get_images_for_username(self, username):
+#        result = []
+#        cursor = execute("SELECT id, file, owner FROM images WHERE owner=%s", (username,))
+#        for t in cursor.fetchall():
+#            result.append(Image(t[0], t[1], t[2]))
+#        return result

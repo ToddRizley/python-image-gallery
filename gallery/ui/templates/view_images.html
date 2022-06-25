@@ -1,0 +1,27 @@
+{% block body %}
+<h2>MY IMAGE GALLERY</h2>
+  {% if images|length == 0 %}
+  	<br/>
+	<p><i>No images to display</i></p>
+  {% else %}
+  <table>
+        {% for item in images %}
+            <tr>
+		    <td>
+			    <a href={{ bucket_url + item.file }} target="_blank">
+				    <img src={{ bucket_url + item.file }} align="center" border="0"  width="500"/>
+		            </a>
+	            </td>
+		    <td>
+			<form action="/delete_image/{{item.owner}}/{{item.id_num}}" method="POST">
+				<input type="submit" value="Delete Image"/>
+			</form>
+		    </td>
+	    </tr>
+        {% endfor %}
+  {% endif %}
+</table>
+</br>
+<p><a href="/">Return to Main Menu</a></p>
+{% endblock body %}
+
