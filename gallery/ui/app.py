@@ -11,7 +11,7 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__)
 app.secret_key = get_secret_flask_session()
 S3_BUCKET = 'edu.au.cc.image-gallery.tzr'
-
+BUCKET_URL = 'https://s3.amazonaws.com/edu.au.cc.image-gallery.tzr/'
 connect()
 
 def check_admin():
@@ -80,12 +80,10 @@ def upload_exec():
 @app.route('/images/<username>')
 @requires_authentication
 def view_images(username):
-    ## get user images
-    images = get_image_dao().get_images_for_username(S3_BUCKET, username) 
-    ## render user images in template
-    return render_template('view_images.html', images=images, username=username)
+    images = get_image_dao().get_images_for_username(username) 
+    return render_template('view_images.html', images=images, bucket_url= BUCKET_URL)
 
-@app.route('/delete_image/<username>/<image_id>')
+@app.route('/delete_image/<username>/<int:image_id>', methods=['POST'])
 @requires_authentication
 def delete_image(username, image_id):
     image = get_image_dao().get_image_by_id_and_username(image_id, username)
@@ -93,7 +91,7 @@ def delete_image(username, image_id):
     flash('Image Deleted!')
     return redirect('/images/'+ username)
 
-@app.route('/admin')
+@app.route('/admin/users')
 @requires_admin
 @requires_authentication
 def admin():
@@ -109,8 +107,11 @@ def add_new_user():
 @requires_admin
 @requires_authentication
 def create_user():
-    get_user_dao().add_user(request.form['username'], request.form['password'], request.form['full_name'], request.form['is_admin'])
-    return  redirect('/admin')
+    if request.form.get('is_admin'):
+        get_user_dao().add_user(request.form['username'], request.form['password'], request.form['full_name'], True)
+    else:
+        get_user_dao().add_user(request.form['username'], request.form['password'], request.form['full_name'], False)
+    return  redirect('/admin/users')
 
 @app.route('/admin/deletion_confirmation/<username>', methods=['GET'])
 @requires_admin
@@ -123,7 +124,7 @@ def deletion_confirmation(username):
 @requires_authentication
 def delete_user_route(username):
     get_user_dao().delete_user(username)
-    return  redirect('/admin')
+    return  redirect('/admin/users')
 
 @app.route('/admin/edit_user/<username>', methods=['GET'])
 @requires_admin
@@ -140,13 +141,13 @@ def update_user(username):
         get_user_dao().edit_password(username, request.form['password'])
     if user.full_name != request.form['full_name']:
         get_user_dao().edit_full_name(username, request.form['full_name'])
-    return  redirect('/admin')
+    return  redirect('/admin/users')
 
-@app.route('/admin/users')
+@app.route('/admin')
 @requires_admin
 @requires_authentication
 def users():
-    return redirect('/admin')
+    return redirect('/admin/users')
 
 #Helper methods
 

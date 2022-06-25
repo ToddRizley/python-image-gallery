@@ -1,18 +1,21 @@
 {% block body %}
-<h2>{{username}}'S IMAGE GALLERY</h2>
+<h2>MY IMAGE GALLERY</h2>
   {% if images|length == 0 %}
   	<br/>
-	<p><i>No images for {{username}}</i></p>
+	<p><i>No images to display</i></p>
   {% else %}
   <table>
         {% for item in images %}
             <tr>
 		    <td>
-			    <a href={{ item.file }}>
-				    <img src={{ item.file }} width="500"/>
+			    <a href={{ bucket_url + item.file }} target="_blank">
+				    <img src={{ bucket_url + item.file }} align="center" border="0"  width="500"/>
 		            </a>
 	            </td>
-		    <a href="/delete_image/{{username}}/{{item.id}}">Delete Image</a>
+		    <td>
+			<form action="/delete_image/{{item.owner}}/{{item.id_num}}" method="POST">
+				<input type="submit" value="Delete Image"/>
+			</form>
 		    </td>
 	    </tr>
         {% endfor %}
