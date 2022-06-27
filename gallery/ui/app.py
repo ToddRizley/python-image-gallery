@@ -1,4 +1,4 @@
-from flask import Flask, flash, request, render_template, redirect, session
+from flask import Flask, os, flash, request, render_template, redirect, session
 from gallery.data.db import connect
 from gallery.data.user import User
 from gallery.data.image import Image
@@ -9,9 +9,14 @@ from functools import wraps
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-app.secret_key = get_secret_flask_session()
-S3_BUCKET = 'edu.au.cc.image-gallery.tzr'
-BUCKET_URL = 'https://s3.amazonaws.com/edu.au.cc.image-gallery.tzr/'
+
+# app.secret_key = get_secret_flask_session()
+# S3_BUCKET = 'edu.au.cc.image-gallery.tzr'
+# BUCKET_URL = 'https://s3.amazonaws.com/edu.au.cc.image-gallery.tzr/'
+app.secret_key = os.getenv("FLASK_SESSION_SECRET")
+S3_BUCKET = os.getenv("S3_IMAGE_BUCKET")
+BUCKET_URL = 'https://s3.amazonaws.com/' + S3_BUCKET
+
 connect()
 
 def check_admin():
@@ -156,3 +161,6 @@ def get_image_dao():
 
 def get_user_dao():
     return PostgresUserDAO()
+
+def config_env():
+
