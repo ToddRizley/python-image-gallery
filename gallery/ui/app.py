@@ -13,7 +13,7 @@ app = Flask(__name__)
 # app.secret_key = get_secret_flask_session()
 # S3_BUCKET = 'edu.au.cc.image-gallery.tzr'
 # BUCKET_URL = 'https://s3.amazonaws.com/edu.au.cc.image-gallery.tzr/'
-app.secret_key = os.getenv("FLASK_SESSION_SECRET")
+app.secret_key = read_session_key(os.getenv("FLASK_SESSION_SECRET_FILE"))
 S3_BUCKET = os.getenv("S3_IMAGE_BUCKET")
 BUCKET_URL = 'https://s3.amazonaws.com/' + S3_BUCKET
 
@@ -162,5 +162,6 @@ def get_image_dao():
 def get_user_dao():
     return PostgresUserDAO()
 
-def config_env():
+def read_session_key(file):
+    return open(file, "r").readline()
 
