@@ -1,4 +1,5 @@
-from flask import Flask, os, flash, request, render_template, redirect, session
+from flask import Flask, flash, request, render_template, redirect, session
+import os
 from gallery.data.db import connect
 from gallery.data.user import User
 from gallery.data.image import Image
