@@ -11,9 +11,9 @@ def connect():
     global connection
 #    secret = get_secret()
 #    connection = psycopg2.connect(host=secret['host'], dbname=secret['db_name'], user= secret['username'], password= secret['password'])
-    ig_password  = open(os.getenv("IG_PASSWD_FILE"), "r").readline()
+    ig_password  = open(os.getenv("IG_PASSWD_FILE"), "r").readline().strip()
 
-    connection = psycopg2.connect(host= os.getenv("PGHOST"), port=os.getenv("PG_PORT"),  dbname=os.getenv("IG_DATABASE"), user=os.getenv("IG_USER"), password=ig_password)
+    connection = psycopg2.connect(host= os.getenv("PG_HOST"), port=os.getenv("PG_PORT"),  dbname=os.getenv("IG_DATABASE"), user=os.getenv("IG_USER"), password=ig_password)
     connection.set_session(autocommit=True)
 
 def execute(query, args=None):
