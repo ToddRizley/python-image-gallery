@@ -18,6 +18,7 @@ def connect():
 
 def execute(query, args=None):
     global connection
+    connect()
     cursor = connection.cursor()
     try:
         if not args:
