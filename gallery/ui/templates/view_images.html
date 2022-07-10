@@ -8,8 +8,8 @@
         {% for item in images %}
             <tr>
 		    <td>
-			    <a href={{ bucket_url + item.file }} target="_blank">
-				    <img src={{ bucket_url + item.file }} align="center" border="0"  width="500"/>
+			    <a href={{ bucket_url + '/' + item.file }} target="_blank">
+				    <img src={{ bucket_url + '/' + item.file }} align="center" border="0"  width="500"/>
 		            </a>
 	            </td>
 		    <td>
